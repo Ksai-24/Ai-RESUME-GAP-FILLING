@@ -31,6 +31,8 @@ Open the local URL printed by Streamlit, usually `http://localhost:8501`.
 
 ## Student demo
 
+Open **Explore a sample** and turn on **Show sample resume comparison** to see a before-and-after result without uploading a file.
+
 1. Select **Student**. Upload **01-avery-base.pdf** from the [demo PDFs](output/pdf/) and paste the [sample job description](demo/job-description.txt).
 2. Confirm Python, SQL and Pandas as required and Tableau as preferred. Click **Analyze Resume**.
 3. Expect **50%** with Python and SQL matched. Expand the Pandas and Tableau gaps for learning resources.
@@ -52,6 +54,8 @@ The three PDFs are synthetic. You can also upload your own text-based PDFs. Encr
 3. Review the score and evidence. Two matches out of four confirmed skills gives **50%**. Required and preferred skills carry equal weight, with required gaps shown first.
 
 The score measures skill mentions. Recruiters assess proficiency and make the hiring decision. Candidate names are inferred from the first nonblank line when it resembles a name. Unclear names display as **Needs review**.
+
+The separate **estimated ATS score** gives up to 60 points for matching confirmed job skills and 10 points each for detectable experience, education, contact details, and a skills heading. It uses extracted PDF text, so it cannot verify visual layout or predict a particular employer's ATS result. HR rankings continue to use the skill-match score.
 
 The [skill catalog](skills_database.csv) includes 35 skills and sample learning resources. To extend it, separate aliases and roadmap steps with a vertical bar, then restart the app. You can also enter custom skills directly in the confirmation editor.
 

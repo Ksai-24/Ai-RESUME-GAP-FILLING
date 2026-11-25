@@ -1,6 +1,7 @@
 """Streamlit entry point for the resume screening workspace."""
 import hashlib
 import sqlite3
+from pathlib import Path
 from urllib.parse import urlparse
 
 import streamlit as st
@@ -11,6 +12,7 @@ from parser import ResumeError, parse_resume
 from recommender import recommendations
 
 MAX_FILES = 100
+ROOT = Path(__file__).resolve().parent
 
 STYLES = """
 <style>
@@ -50,6 +52,16 @@ STYLES = """
   background: repeating-linear-gradient(to bottom, #5544aa 0 5px, transparent 5px 17px);
   border-radius: 4px;
 }
+.resume-hero { min-height: 15rem; background: radial-gradient(ellipse at 86% 10%, #354e97, transparent 62%), #151b3a; }
+.resume-hero p { color: #e1e7ff; margin: .85rem 0 0; max-width: 30rem; }
+.resume-stack { top: 17%; }
+@media (prefers-reduced-motion: no-preference) {
+  .resume-stack { transition: transform .25s ease; }
+  .resume-stack:hover { transform: perspective(680px) rotateX(24deg) rotateY(-20deg) rotateZ(10deg); }
+}
+.demo-result { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .7rem; margin: .7rem 0 1.15rem; color: #262255; }
+.demo-result div { display: grid; padding: .85rem; border-radius: .85rem; background: #eef0ff; box-shadow: 0 5px 0 #d9ddf7; text-align: center; }
+.demo-result strong { font-size: clamp(1.5rem, 4vw, 2.6rem); line-height: 1.15; }
 .score-dial {
   display: grid; place-items: center; position: relative; isolation: isolate;
   width: 9.5rem; aspect-ratio: 1; margin: .5rem auto 1.4rem; border-radius: 50%;
@@ -126,6 +138,48 @@ def details(resume, result):
                     alert(f"{skill.name} · Not found in resume.")
 
 
+def ats_readiness(resume, result):
+    checks = (
+        ("Experience section", bool(resume.experience), "Add relevant work or internships under an Experience heading."),
+        ("Education section", bool(resume.education), "Add your qualifications under an Education heading."),
+        ("Detectable contact details", bool(resume.email or resume.phone), "Include a text-based email address or phone number."),
+        ("Skills section", resume.has_skills_section, "Use a Skills or Technical Skills heading."),
+    )
+    return round(0.6 * result.score + 10 * sum(found for _, found, _ in checks)), checks
+
+
+def show_ats(resume, result):
+    score, checks = ats_readiness(resume, result)
+    with st.container(border=True, key="card_ats"):
+        st.subheader("ATS readiness")
+        st.metric("Estimated ATS score", f"{score}/100")
+        st.caption("Up to 60 points for confirmed job skill matches, plus 10 per check below. "
+                   "This estimate uses extracted PDF text. Employer ATS rules and layout checks vary.")
+        st.progress(score / 100)
+        for label, found, suggestion in checks:
+            st.text(f"Found · {label}" if found else f"Review · {label} — {suggestion}")
+
+
+def sample_comparison():
+    description = (ROOT / "demo" / "job-description.txt").read_text(encoding="utf-8")
+    job = job_skills(description)
+    samples = []
+    for name in ("01-avery-base.pdf", "02-avery-updated.pdf"):
+        resume = parse_resume((ROOT / "output" / "pdf" / name).read_bytes(), job)
+        samples.append(screen(resume.skills, job))
+    before, after = samples
+    newly_matched = {skill.name for skill in after.matched} - {skill.name for skill in before.matched}
+    st.html(f"""
+        <div class="demo-result">
+          <div><span>Original skill match</span><strong>{before.score:g}%</strong></div>
+          <span aria-hidden="true">→</span>
+          <div><span>Updated skill match</span><strong>{after.score:g}%</strong></div>
+        </div>
+    """)
+    st.text("Newly matched · " + ", ".join(sorted(newly_matched)))
+    st.text("Still to learn · " + listed(after.gaps))
+
+
 def student_results(record):
     filename, _, resume, result, previous = record
     st.header("Screening results")
@@ -141,6 +195,7 @@ def student_results(record):
             st.metric("Missing Required Skills", len(result.missing_required))
             if result.missing_required:
                 st.error(listed(result.missing_required))
+    show_ats(resume, result)
     if previous:
         with st.container(border=True, key="card_comparison"):
             st.subheader("Resume comparison")
@@ -206,6 +261,7 @@ def hr_results(successes, failures):
             st.subheader(resume.name)
             st.text(filename)
             st.caption(result.status)
+        show_ats(resume, result)
         details(resume, result)
 
 
@@ -214,7 +270,10 @@ def main():
     st.markdown(STYLES, unsafe_allow_html=True)
     st.html("""
         <header class="resume-hero">
-            <h1>Resume screening workspace</h1>
+            <div>
+              <h1>See how your resume fits the role.</h1>
+              <p>Check ATS readiness, find missing skills, and see what to improve before you apply.</p>
+            </div>
             <div class="resume-stack" aria-hidden="true"><i></i><i></i><i></i></div>
         </header>
     """)
@@ -232,6 +291,11 @@ def main():
         if key in st.session_state:
             st.session_state[key] = st.session_state[key]
     student = mode == "Student"
+    if student:
+        with st.container(border=True, key="card_sample"):
+            st.subheader("Explore a sample")
+            if st.toggle("Show sample resume comparison"):
+                sample_comparison()
     generation = st.session_state.setdefault("student_upload", 0)
     upload_column, job_column = st.columns(2)
     with upload_column, st.container(border=True, key="card_upload"):

@@ -31,6 +31,7 @@ class Resume:
     education: str
     experience: str
     skills: dict[str, str]
+    has_skills_section: bool = False
 
 
 def extract_pdf(data):
@@ -60,9 +61,12 @@ def parse_resume(data, job):
     phone = PHONE.search(text)
     sections = {"education": [], "experience": []}
     current = ""
+    has_skills_section = False
     for line in lines:
         heading, _, content = line.partition(":")
         key = heading.strip().casefold()
+        if key in {"skills", "technical skills"}:
+            has_skills_section = True
         if key in HEADINGS:
             current = HEADINGS[key]
             line = content.strip()
@@ -72,5 +76,5 @@ def parse_resume(data, job):
     return Resume(
         name, email.group() if email else "", phone.group() if phone else "",
         "\n".join(sections["education"]), "\n".join(sections["experience"]),
-        {skill: excerpt(normalized, *position) for skill, position in hits.items()},
+        {skill: excerpt(normalized, *position) for skill, position in hits.items()}, has_skills_section,
     )

@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 from PyPDF2 import PdfWriter
 
-from app import evaluate, evaluate_batch
+from app import ats_readiness, evaluate, evaluate_batch
 from database import job_reference, save_results
 from matcher import confirmed_skills, detect, job_skills, screen
 from parser import ResumeError, extract_pdf
@@ -43,6 +43,9 @@ class ScreeningTests(unittest.TestCase):
         self.assertEqual((before.score, after.score), (50, 75))
         self.assertEqual({s.name for s in after.matched} - {s.name for s in before.matched}, {"Pandas"})
         self.assertIn("Data Analyst Intern", resume.experience)
+        score, checks = ats_readiness(resume, before)
+        self.assertEqual(score, 60)
+        self.assertEqual([found for _, found, _ in checks], [True, True, False, True])
         self.assertIn("Information Systems", resume.education)
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "history.sqlite3"
