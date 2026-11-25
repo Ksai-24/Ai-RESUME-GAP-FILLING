@@ -55,7 +55,8 @@ STYLES = """
   transform: rotate(-45deg);
 }
 .stMain .st-key-card_mode { background: transparent; border: 0; box-shadow: none; padding: .65rem 0 .35rem; }
-.st-key-card_mode [data-testid="stRadio"] { align-items: center; }
+.st-key-card_mode [data-testid="stElementContainer"]:has([data-testid="stRadio"]) { align-self: center; margin-inline: auto; }
+.st-key-card_mode [data-testid="stRadio"] { display: grid; justify-items: center; }
 .st-key-card_mode [data-testid="stWidgetLabel"] { justify-content: center; }
 .st-key-card_mode [role="radiogroup"] {
   justify-content: center; align-self: center; gap: .25rem; width: fit-content;
@@ -67,7 +68,7 @@ STYLES = """
 .st-key-card_mode [data-testid="stCaptionContainer"] { text-align: center; }
 .stMain :is(.st-key-card_upload, .st-key-card_job) { border-top: 3px solid #2f6855; border-radius: 1rem 1rem .6rem .6rem; }
 .stMain [data-testid="stFileUploaderDropzone"] {
-  min-height: 150px; background: #f3f7ef; border: 1px dashed #87a895; border-radius: .75rem;
+  min-height: 122px; background: #f3f7ef; border: 1px dashed #87a895; border-radius: .75rem;
   align-content: center; align-items: center;
 }
 .st-key-card_job textarea { border-radius: .75rem; }
