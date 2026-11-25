@@ -7,7 +7,6 @@ textColor = "#182c24"
 font = "sans serif"
 
 [server]
-enableStaticServing = true
 maxUploadSize = 10
 
 [browser]

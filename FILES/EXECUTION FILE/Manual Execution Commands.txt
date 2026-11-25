@@ -1,0 +1,47 @@
+MANUAL EXECUTION COMMANDS
+AI Resume Screening and Skill Gap Finder
+
+Windows PowerShell
+Open PowerShell in the project root or run the first command below.
+Run each command separately.
+
+Set-Location -LiteralPath 'D:\RESUME AND GAP FILLING'
+python3.14 --version
+python3.14 -m venv .venv314
+& .\.venv314\Scripts\python.exe -m pip install -r requirements.txt
+& .\.venv314\Scripts\python.exe -m streamlit run app.py
+
+Open http://localhost:8501 in a browser. Press Ctrl+C in PowerShell to stop.
+
+Run the automated tests from the same project root.
+
+Push-Location -LiteralPath 'SOURCE CODE'
+& ..\.venv314\Scripts\python.exe -m unittest discover -s tests -v
+Pop-Location
+
+Demo files
+Job description   SOURCE CODE\demo\job-description.txt
+Base resume       SOURCE CODE\output\pdf\01-avery-base.pdf
+Updated resume    SOURCE CODE\output\pdf\02-avery-updated.pdf
+Third resume      SOURCE CODE\output\pdf\03-morgan-diaz.pdf
+
+Student mode
+Upload the base PDF and paste the sample job description. Confirm the skills
+and analyze. Expect a 50% match and 60/100 estimated ATS readiness. Replace
+the PDF with the updated resume to see a 75% match and Pandas newly matched.
+
+HR mode
+Upload all three demo PDFs, paste the same job description, and screen.
+Select a candidate in the ranking to inspect evidence, gaps, and ATS readiness.
+
+Render settings
+Repository       https://github.com/Ksai-24/Ai-RESUME-GAP-FILLING
+Branch           main
+Runtime          Python 3.14 through .python-version at the repository root
+Build command    pip install -r requirements.txt
+Start command    streamlit run app.py --server.headless true --server.address 0.0.0.0 --server.port "$PORT"
+Health endpoint  /_stcore/health
+Live site        https://ai-resume-gap-filling.onrender.com/
+
+If Python is missing, install Python 3.14 and reopen PowerShell. If port 8501
+is occupied, append --server.port 8502 to the local Streamlit command.

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from matcher import skill_key
 
-DB_PATH = Path(__file__).with_name("history.sqlite3")
+DB_PATH = Path(__file__).resolve().parents[1] / "history.sqlite3"
 
 
 def job_reference(description, skills):

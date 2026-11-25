@@ -31,7 +31,7 @@ Open the local URL printed by Streamlit, usually `http://localhost:8501`.
 
 ## Student demo
 
-1. Select **Student**. Upload **01-avery-base.pdf** from the [demo PDFs](output/pdf/) and paste the [sample job description](demo/job-description.txt).
+1. Select **Student**. Upload **01-avery-base.pdf** from the [demo PDFs](SOURCE%20CODE/output/pdf/) and paste the [sample job description](SOURCE%20CODE/demo/job-description.txt).
 2. Confirm Python, SQL and Pandas as required and Tableau as preferred. Click **Analyze Resume**.
 3. Expect **50%** with Python and SQL matched. Expand the Pandas and Tableau gaps for learning resources.
 4. Click **Replace PDF** and upload **02-avery-updated.pdf**. Keep the description and confirmed skills the same, then analyze. Expect **75%** and Pandas under **Newly Matched Skills**.
@@ -55,7 +55,7 @@ The score measures skill mentions. Recruiters assess proficiency and make the hi
 
 The separate **estimated ATS score** gives up to 60 points for matching confirmed job skills and 10 points each for detectable experience, education, contact details, and a skills heading. It uses extracted PDF text, so it cannot verify visual layout or predict a particular employer's ATS result. HR rankings continue to use the skill-match score.
 
-The [skill catalog](skills_database.csv) includes 35 skills and sample learning resources. To extend it, separate aliases and roadmap steps with a vertical bar, then restart the app. You can also enter custom skills directly in the confirmation editor.
+The [skill catalog](SOURCE%20CODE/skills_database.csv) includes 35 skills and sample learning resources. To extend it, separate aliases and roadmap steps with a vertical bar, then restart the app. You can also enter custom skills directly in the confirmation editor.
 
 ## Data and privacy
 
@@ -73,8 +73,12 @@ Set the health check path to `/_stcore/health`. SQLite history can reset when th
 
 ## Run the tests
 
-```bash
-python -m unittest discover -s tests -v
+```powershell
+Push-Location -LiteralPath 'SOURCE CODE'
+& ..\.venv314\Scripts\python.exe -m unittest discover -s tests -v
+Pop-Location
 ```
+
+The implementation, tests, and demo assets are in [SOURCE CODE](SOURCE%20CODE/). The [FILES](FILES/) folder contains the presentation, base paper, execution instructions, and project report.
 
 Hero photograph by [Anna Shvets on Pexels](https://www.pexels.com/photo/young-woman-surfing-internet-on-laptop-in-cafeteria-5711932/).

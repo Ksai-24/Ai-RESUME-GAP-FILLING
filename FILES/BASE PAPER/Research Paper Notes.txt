@@ -1,0 +1,26 @@
+BASE PAPER AND PROJECT RELEVANCE
+
+Vásquez-Rodríguez, L., Audrin, B., Michel, S., Galli, S., Rogenhofer, J.,
+Negro Cusa, J., and van der Plas, L. (2026). Comparing AI-based approaches
+to candidate screening: recommendations for policy and regulation.
+Data & Policy, volume 8. Cambridge University Press.
+DOI 10.1017/dap.2026.10076
+https://doi.org/10.1017/dap.2026.10076
+
+The included PDF is the original publisher copy. The article is open access
+under Creative Commons Attribution 4.0.
+https://creativecommons.org/licenses/by/4.0/
+
+WHY THIS PAPER
+The study directly examines skill extraction from resumes, where layout,
+wording, and the definition of a skill can vary. It compares automated
+approaches with human annotations collected across 46 resumes. Its focus
+on evidence and interpretation is relevant to a transparent screening tool.
+
+HOW IT RELATES TO THIS PROJECT
+The app uses its own deterministic skill catalog and alias rules. Reviewers
+can edit the target skill list and inspect the matching text. These design
+choices address the practical need to review automated matches in context.
+The paper provides research context and does not validate the app's scores,
+ranking, or estimated ATS readiness. Its dataset and methods were not used
+to train or benchmark this implementation.
