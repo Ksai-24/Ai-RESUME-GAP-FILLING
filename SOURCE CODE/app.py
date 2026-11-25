@@ -17,7 +17,7 @@ MAX_FILES = 100
 STYLES = """
 <style>
 
-.stMain { background: #f6f5ef; }
+.stMain { background: #f7f1e7; }
 .stMain .block-container { max-width: 73rem; padding-top: 1.75rem; padding-bottom: 4rem; }
 .stMain [class*="st-key-card_"] {
   background: #fff; border: 1px solid #e0e4db; border-radius: 1rem;
@@ -26,36 +26,44 @@ STYLES = """
 .stMain [data-testid="stAlert"] p, .stMain [data-testid="stText"] { overflow-wrap: anywhere; }
 .stMain [data-testid="stText"] { white-space: pre-wrap; }
 .resume-hero {
-  position: relative; isolation: isolate; overflow: hidden;
-  display: grid; grid-template-columns: 1.05fr 1fr; min-height: 19rem;
-  border-radius: 1.6rem .65rem 1.6rem .65rem; background: #12342d;
-  box-shadow: 0 7px 0 #dce1d4, 0 26px 34px -28px #14372c90;
+  position: relative; isolation: isolate; display: grid; justify-items: center;
+  min-height: 29rem; padding: 4.2rem 1rem 2.2rem; margin-bottom: .6rem;
+  text-align: center; border-bottom: 1px solid #d9d0bf;
 }
-.resume-copy { align-self: center; padding: clamp(1.4rem, 4vw, 3rem); }
+.resume-copy { position: relative; z-index: 2; max-width: 53rem; align-self: center; }
 .stMain .resume-hero h1 {
-  color: #fafff7; font-family: Georgia, serif; font-weight: 500;
-  font-size: clamp(2.25rem, 5.1vw, 4.6rem); line-height: .98; letter-spacing: -.055em; padding: 0;
+  color: #231e19; font-family: Impact, "Arial Black", sans-serif;
+  font-weight: 900; font-size: clamp(3rem, 8.2vw, 7.2rem); line-height: .88;
+  letter-spacing: -.035em; text-transform: uppercase; padding: 0;
 }
-.resume-hero h1 em { color: #daf3aa; font-weight: inherit; }
-.resume-hero p { color: #e4ece4; margin: 1rem 0 0; max-width: 25rem; font-size: 1.05rem; }
-.resume-visual { position: relative; min-height: 14rem; }
-.resume-visual img { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: 50% 48%; }
-.resume-visual::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, #12342d85, transparent 45%);
+.resume-hero h1 span { display: block; color: #aa3824; }
+.resume-hero p { color: #51463a; margin: 1.35rem auto 1.4rem; max-width: 29rem; font-size: 1.08rem; }
+.stMain .resume-hero .resume-start {
+  display: inline-block; color: #222014; background: #e4f064; border: 2px solid #282316;
+  border-radius: .6rem; padding: .65rem 1.25rem; font-weight: 750; text-decoration: none;
+  box-shadow: 0 4px 0 #282316;
 }
+.stMain .resume-hero .resume-start:hover { background: #eff89c; }
+.stMain .resume-hero .resume-start:focus-visible { outline: 3px solid #aa3824; outline-offset: 4px; }
+.resume-visual {
+  position: absolute; bottom: 2.3rem; right: 1.2rem; width: 15%; min-width: 8rem;
+  aspect-ratio: 4 / 5; transform: rotate(8deg);
+  border: .45rem solid #fff9ec; border-radius: .45rem;
+  box-shadow: 4px 7px 0 #c6b59a, 0 16px 28px -13px #3f3026a0; overflow: hidden;
+}
+.resume-visual img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 63% center; }
 .resume-sculpture {
-  z-index: 1; pointer-events: none; position: absolute; bottom: 12%; left: 10%;
-  width: clamp(3.7rem, 8vw, 6rem); aspect-ratio: 1; border-radius: 30%;
-  border: .45rem solid #d8f0a3; background: linear-gradient(135deg, #82a85e, #153c32);
-  box-shadow: 0 6px 0 #648b54, 0 11px 0 #375d42, 3px 19px 20px #10292185;
-  transform: perspective(500px) rotateX(24deg) rotateY(-25deg) rotateZ(-12deg);
+  pointer-events: none; position: absolute; bottom: 2.8rem; left: 1.6rem;
+  width: 14%; min-width: 7rem; aspect-ratio: 4 / 5; border: 2px solid #30271d;
+  border-radius: .65rem; background: #f9c6a2;
+  box-shadow: -7px 8px 0 #e4f064, -9px 10px 0 1px #30271d, 0 20px 26px -21px #3f3026;
+  transform: perspective(580px) rotateY(12deg) rotateZ(-11deg);
 }
 .resume-sculpture::after {
-  content: ""; display: block; width: 38%; height: 23%; margin: 28% auto 0;
-  border-left: .25rem solid #eaffc6; border-bottom: .25rem solid #eaffc6;
-  transform: rotate(-45deg);
+  content: ""; display: block; position: absolute; inset: 25% 16% 23%;
+  background: repeating-linear-gradient(to bottom, #724132 0 4px, transparent 4px 18px);
 }
+#screening-workspace { scroll-margin-top: 4.2rem; }
 .stMain .st-key-card_mode { background: transparent; border: 0; box-shadow: none; padding: .65rem 0 .35rem; }
 .st-key-card_mode [data-testid="stElementContainer"]:has([data-testid="stRadio"]) { align-self: center; margin-inline: auto; }
 .st-key-card_mode [data-testid="stRadio"] { display: grid; justify-items: center; }
@@ -92,10 +100,10 @@ STYLES = """
   .stMain .block-container { padding: 1.5rem 1rem 3rem; }
   .stMain [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: .75rem; }
   .stMain [data-testid="stColumn"] { flex: 1 1 100%; min-width: 0; width: 100%; }
-  .resume-hero { grid-template-columns: 1fr; min-height: 0; }
-  .stMain .resume-hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
-  .resume-visual { min-height: 11rem; }
-  .resume-visual::after { background: linear-gradient(#12342d55, transparent 45%); }
+  .resume-hero { min-height: 0; padding: 3rem .25rem 1.7rem; }
+  .stMain .resume-hero h1 { font-size: clamp(2.25rem, 9vw, 3.7rem); }
+  .resume-hero p { font-size: 1rem; }
+  .resume-visual, .resume-sculpture { display: none; }
   .stMain [data-testid="stFileUploaderDropzone"] { min-height: 110px; }
 }
 </style>
@@ -267,14 +275,16 @@ def main():
     st.html(f"""
         <header class="resume-hero">
             <div class="resume-copy">
-              <h1>Know where<br>you <em>match.</em></h1>
-              <p>Compare a resume with a job description. See the skills that match, the gaps to work on, and an ATS readiness estimate.</p>
+              <h1>Find your fit.<span>Close the gaps.</span></h1>
+              <p>Get a skill-by-skill resume match, an ATS readiness estimate, and a plan for what to learn next.</p>
+              <a class="resume-start" href="#screening-workspace">Start screening</a>
             </div>
             <div class="resume-visual">
               <img src="data:image/jpeg;base64,{photo}" alt="" width="1000" fetchpriority="high">
-              <span class="resume-sculpture" aria-hidden="true"></span>
             </div>
+            <div class="resume-sculpture" aria-hidden="true"></div>
         </header>
+        <div id="screening-workspace"></div>
     """)
     with st.container(border=True, key="card_mode"):
         mode = st.radio("Screening mode", ["Student", "HR"], horizontal=True)
