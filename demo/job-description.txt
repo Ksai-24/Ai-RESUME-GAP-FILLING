@@ -1,0 +1,9 @@
+Junior Data Analyst
+
+Required skills:
+- Python to automate repeatable data cleaning.
+- SQL to join source tables and calculate reporting metrics.
+- Pandas to transform raw data into reporting tables.
+
+Preferred skills:
+- Tableau to present team metrics in interactive dashboards.
