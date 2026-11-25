@@ -1,7 +1,6 @@
 """Streamlit entry point for the resume screening workspace."""
 import hashlib
 import sqlite3
-from pathlib import Path
 from urllib.parse import urlparse
 
 import streamlit as st
@@ -12,76 +11,89 @@ from parser import ResumeError, parse_resume
 from recommender import recommendations
 
 MAX_FILES = 100
-ROOT = Path(__file__).resolve().parent
 
 STYLES = """
 <style>
-.stMain { background: radial-gradient(ellipse at 90% 0%, #e3e5fc, transparent 48%), #eff2f9; }
-.stMain .block-container { max-width: 76rem; padding-top: 2rem; padding-bottom: 4rem; }
+
+.stMain { background: #f6f5ef; }
+.stMain .block-container { max-width: 73rem; padding-top: 1.75rem; padding-bottom: 4rem; }
 .stMain [class*="st-key-card_"] {
-  background: #fff; border-radius: 1.1rem; border-color: #dce1f0;
-  box-shadow: 0 3px 0 #e0e4f1, 0 14px 28px -19px #49478480;
+  background: #fff; border: 1px solid #e0e4db; border-radius: 1rem;
+  box-shadow: 0 4px 0 #e9ebe3, 0 12px 22px -18px #17453760;
 }
-.stMain [data-testid="stFileUploaderDropzone"] { background: #f5f4ff; border: 1px dashed #9993c8; border-radius: .8rem; }
-.stMain [data-testid="stBaseButton-primary"]:enabled { box-shadow: 0 4px 0 #282267; border-radius: .7rem; }
-.stMain [data-testid="stBaseButton-primary"]:enabled:active { transform: translateY(2px); box-shadow: 0 2px 0 #282267; }
-.stMain [data-testid="stMetricValue"] { font-weight: 700; }
-.stMain [data-testid="stAlert"] p { overflow-wrap: anywhere; }
-.stMain [data-testid="stText"] { white-space: pre-wrap; overflow-wrap: anywhere; }
+.stMain [data-testid="stAlert"] p, .stMain [data-testid="stText"] { overflow-wrap: anywhere; }
+.stMain [data-testid="stText"] { white-space: pre-wrap; }
 .resume-hero {
-  position: relative; isolation: isolate; overflow: hidden; border-radius: 1.4rem;
-  min-height: 13rem; display: flex; align-items: center; padding: 2rem 34% 2rem 2rem;
-  background: radial-gradient(ellipse at 87% 20%, #5045ab, transparent 62%), #19173c;
-  box-shadow: 0 7px 0 #ccc9ed, 0 20px 32px -22px #31296d;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; grid-template-columns: 1.05fr 1fr; min-height: 19rem;
+  border-radius: 1.6rem .65rem 1.6rem .65rem; background: #12342d;
+  box-shadow: 0 7px 0 #dce1d4, 0 26px 34px -28px #14372c90;
 }
-.stMain .resume-hero h1 { color: #fff; font-size: clamp(2.1rem, 5vw, 4.1rem); line-height: 1.05; padding: 0; letter-spacing: -.045em; }
-.resume-stack {
-  position: absolute; right: 9%; top: 9%; width: 8.3rem; height: 10rem;
-  transform: perspective(680px) rotateX(36deg) rotateY(-27deg) rotateZ(17deg);
+.resume-copy { align-self: center; padding: clamp(1.4rem, 4vw, 3rem); }
+.stMain .resume-hero h1 {
+  color: #fafff7; font-family: Georgia, serif; font-weight: 500;
+  font-size: clamp(2.25rem, 5.1vw, 4.6rem); line-height: .98; letter-spacing: -.055em; padding: 0;
 }
-.resume-stack i {
-  position: absolute; inset: 0; border: 1px solid #d9d4ff; border-radius: 1rem;
-  background: linear-gradient(150deg, #c9c1ff, #6f61cb);
-  box-shadow: 0 6px 0 #52449f, 0 15px 20px #110d3c80;
+.resume-hero h1 em { color: #daf3aa; font-weight: inherit; }
+.resume-hero p { color: #e4ece4; margin: 1rem 0 0; max-width: 25rem; font-size: 1.05rem; }
+.resume-visual { position: relative; min-height: 14rem; }
+.resume-visual img { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: 50% 48%; }
+.resume-visual::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #12342d85, transparent 45%);
 }
-.resume-stack i:nth-child(1) { transform: translate(-26px, 25px); }
-.resume-stack i:nth-child(2) { transform: translate(-13px, 12px); }
-.resume-stack i:nth-child(3) { background: linear-gradient(145deg, #f4f1ff, #b9aafa); }
-.resume-stack i:nth-child(3)::before {
-  content: ""; position: absolute; inset: 22% 23%;
-  background: repeating-linear-gradient(to bottom, #5544aa 0 5px, transparent 5px 17px);
-  border-radius: 4px;
+.resume-sculpture {
+  z-index: 1; pointer-events: none; position: absolute; bottom: 12%; left: 10%;
+  width: clamp(3.7rem, 8vw, 6rem); aspect-ratio: 1; border-radius: 30%;
+  border: .45rem solid #d8f0a3; background: linear-gradient(135deg, #82a85e, #153c32);
+  box-shadow: 0 6px 0 #648b54, 0 11px 0 #375d42, 3px 19px 20px #10292185;
+  transform: perspective(500px) rotateX(24deg) rotateY(-25deg) rotateZ(-12deg);
 }
-.resume-hero { min-height: 15rem; background: radial-gradient(ellipse at 86% 10%, #354e97, transparent 62%), #151b3a; }
-.resume-hero p { color: #e1e7ff; margin: .85rem 0 0; max-width: 30rem; }
-.resume-stack { top: 17%; }
-@media (prefers-reduced-motion: no-preference) {
-  .resume-stack { transition: transform .25s ease; }
-  .resume-stack:hover { transform: perspective(680px) rotateX(24deg) rotateY(-20deg) rotateZ(10deg); }
+.resume-sculpture::after {
+  content: ""; display: block; width: 38%; height: 23%; margin: 28% auto 0;
+  border-left: .25rem solid #eaffc6; border-bottom: .25rem solid #eaffc6;
+  transform: rotate(-45deg);
 }
-.demo-result { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .7rem; margin: .7rem 0 1.15rem; color: #262255; }
-.demo-result div { display: grid; padding: .85rem; border-radius: .85rem; background: #eef0ff; box-shadow: 0 5px 0 #d9ddf7; text-align: center; }
-.demo-result strong { font-size: clamp(1.5rem, 4vw, 2.6rem); line-height: 1.15; }
+.stMain .st-key-card_mode { background: transparent; border: 0; box-shadow: none; padding: .65rem 0 .35rem; }
+.st-key-card_mode [data-testid="stRadio"] { align-items: center; }
+.st-key-card_mode [data-testid="stWidgetLabel"] { justify-content: center; }
+.st-key-card_mode [role="radiogroup"] {
+  justify-content: center; align-self: center; gap: .25rem; width: fit-content;
+  border-radius: 999px; background: #e9eee4; padding: .25rem;
+}
+.st-key-card_mode label[data-baseweb="radio"] { margin: 0; padding: .4rem 1rem; border-radius: 999px; }
+.st-key-card_mode label[data-baseweb="radio"]:has(input:checked) { background: white; box-shadow: 0 2px 4px #183c3025; }
+.st-key-card_mode label[data-baseweb="radio"]:focus-within { outline: 2px solid #27624d; outline-offset: 1px; }
+.st-key-card_mode [data-testid="stCaptionContainer"] { text-align: center; }
+.stMain :is(.st-key-card_upload, .st-key-card_job) { border-top: 3px solid #2f6855; border-radius: 1rem 1rem .6rem .6rem; }
+.stMain [data-testid="stFileUploaderDropzone"] {
+  min-height: 150px; background: #f3f7ef; border: 1px dashed #87a895; border-radius: .75rem;
+  align-content: center; align-items: center;
+}
+.st-key-card_job textarea { border-radius: .75rem; }
+.stMain [data-testid="stBaseButton-primary"]:enabled { box-shadow: 0 3px 0 #12342d; border-radius: .65rem; }
 .score-dial {
   display: grid; place-items: center; position: relative; isolation: isolate;
   width: 9.5rem; aspect-ratio: 1; margin: .5rem auto 1.4rem; border-radius: 50%;
-  background: conic-gradient(#594bd9 var(--score), #e5e3f6 0);
-  box-shadow: 0 7px 0 #bbb4e5, 0 14px 22px -9px #33298290;
+  background: conic-gradient(#397455 var(--score), #e7eddf 0);
+  box-shadow: 0 7px 0 #b6c9ab, 0 14px 22px -9px #244e3c90;
 }
 .score-dial::before {
   content: ""; position: absolute; inset: .65rem; z-index: -1; border-radius: 50%;
-  background: linear-gradient(140deg, white, #eeebfe); box-shadow: inset 0 3px 8px #4f40a42b;
+  background: linear-gradient(140deg, white, #eff5e8); box-shadow: inset 0 3px 8px #24533b2b;
 }
-.score-dial div { display: grid; text-align: center; color: #282267; }
+.score-dial div { display: grid; text-align: center; color: #17382a; }
 .score-dial strong { font-size: 2.1rem; line-height: 1.15; }
 .score-dial span { font-size: .85rem; font-weight: 600; }
 @media (max-width: 640px) {
   .stMain .block-container { padding: 1.5rem 1rem 3rem; }
   .stMain [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: .75rem; }
   .stMain [data-testid="stColumn"] { flex: 1 1 100%; min-width: 0; width: 100%; }
-  .resume-hero { min-height: 10rem; padding: 1.2rem 34% 1.2rem 1.2rem; }
-  .stMain .resume-hero h1 { font-size: clamp(1.45rem, 6.3vw, 2rem); }
-  .resume-stack { top: 11%; right: 5%; width: 4.5rem; height: 6rem; }
+  .resume-hero { grid-template-columns: 1fr; min-height: 0; }
+  .stMain .resume-hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
+  .resume-visual { min-height: 11rem; }
+  .resume-visual::after { background: linear-gradient(#12342d55, transparent 45%); }
+  .stMain [data-testid="stFileUploaderDropzone"] { min-height: 110px; }
 }
 </style>
 """
@@ -158,26 +170,6 @@ def show_ats(resume, result):
         st.progress(score / 100)
         for label, found, suggestion in checks:
             st.text(f"Found · {label}" if found else f"Review · {label} — {suggestion}")
-
-
-def sample_comparison():
-    description = (ROOT / "demo" / "job-description.txt").read_text(encoding="utf-8")
-    job = job_skills(description)
-    samples = []
-    for name in ("01-avery-base.pdf", "02-avery-updated.pdf"):
-        resume = parse_resume((ROOT / "output" / "pdf" / name).read_bytes(), job)
-        samples.append(screen(resume.skills, job))
-    before, after = samples
-    newly_matched = {skill.name for skill in after.matched} - {skill.name for skill in before.matched}
-    st.html(f"""
-        <div class="demo-result">
-          <div><span>Original skill match</span><strong>{before.score:g}%</strong></div>
-          <span aria-hidden="true">→</span>
-          <div><span>Updated skill match</span><strong>{after.score:g}%</strong></div>
-        </div>
-    """)
-    st.text("Newly matched · " + ", ".join(sorted(newly_matched)))
-    st.text("Still to learn · " + listed(after.gaps))
 
 
 def student_results(record):
@@ -270,11 +262,14 @@ def main():
     st.markdown(STYLES, unsafe_allow_html=True)
     st.html("""
         <header class="resume-hero">
-            <div>
-              <h1>See how your resume fits the role.</h1>
-              <p>Check ATS readiness, find missing skills, and see what to improve before you apply.</p>
+            <div class="resume-copy">
+              <h1>Know where<br>you <em>match.</em></h1>
+              <p>Compare a resume with a job description. See the skills that match, the gaps to work on, and an ATS readiness estimate.</p>
             </div>
-            <div class="resume-stack" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="resume-visual">
+              <img src="app/static/workspace-photo.jpg" alt="" width="1000" fetchpriority="high">
+              <span class="resume-sculpture" aria-hidden="true"></span>
+            </div>
         </header>
     """)
     with st.container(border=True, key="card_mode"):
@@ -291,11 +286,6 @@ def main():
         if key in st.session_state:
             st.session_state[key] = st.session_state[key]
     student = mode == "Student"
-    if student:
-        with st.container(border=True, key="card_sample"):
-            st.subheader("Explore a sample")
-            if st.toggle("Show sample resume comparison"):
-                sample_comparison()
     generation = st.session_state.setdefault("student_upload", 0)
     upload_column, job_column = st.columns(2)
     with upload_column, st.container(border=True, key="card_upload"):
@@ -315,7 +305,7 @@ def main():
             st.error(f"Selected {len(files)} files. Remove {len(files) - MAX_FILES} to continue.")
     with job_column, st.container(border=True, key="card_job"):
         st.subheader("Job description")
-        description = st.text_area("Paste the job description", key=f"{mode}_description", height=163)
+        description = st.text_area("Paste the job description", key=f"{mode}_description", height=150)
 
     job = ()
     if description.strip():

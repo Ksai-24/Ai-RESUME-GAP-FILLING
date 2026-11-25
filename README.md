@@ -31,8 +31,6 @@ Open the local URL printed by Streamlit, usually `http://localhost:8501`.
 
 ## Student demo
 
-Open **Explore a sample** and turn on **Show sample resume comparison** to see a before-and-after result without uploading a file.
-
 1. Select **Student**. Upload **01-avery-base.pdf** from the [demo PDFs](output/pdf/) and paste the [sample job description](demo/job-description.txt).
 2. Confirm Python, SQL and Pandas as required and Tableau as preferred. Click **Analyze Resume**.
 3. Expect **50%** with Python and SQL matched. Expand the Pandas and Tableau gaps for learning resources.
@@ -78,3 +76,5 @@ Set the health check path to `/_stcore/health`. SQLite history can reset when th
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+Hero photograph by [Anna Shvets on Pexels](https://www.pexels.com/photo/young-woman-surfing-internet-on-laptop-in-cafeteria-5711932/).
